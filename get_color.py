@@ -16,6 +16,7 @@ for y in range(0, sp[0]):
 		# color in B G R order
 		color = img[y, x]
 		if color[2] > 254:
+			print(color)
 			# count = count + 1
 			img[y, x] = [0, 0, 0]
 

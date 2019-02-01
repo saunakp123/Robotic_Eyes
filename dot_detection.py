@@ -8,7 +8,6 @@ while(1):
     # get a frame
     ret, img = cap.read()
     img_hue = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-
     # opencv index use height*width
     height, width, channel = img.shape
 
@@ -32,7 +31,7 @@ while(1):
     # end = time.time()
     # print(end - start)
     # print(count)
-    cv.circle(img, center, 5, (0,255,0), 1)
+    cv.circle(img, center, 5, (0,255,0), -1)
 
     # show a frame
     cv.imshow("capture", img)
