@@ -32,7 +32,7 @@ while(1):
     # end = time.time()
     # print(end - start)
     # print(count)
-    cv.circle(img, center, 5, (0,255,0), -1)
+    cv.circle(img, center, 5, (0,255,0), 1)
 
     # show a frame
     cv.imshow("capture", img)
@@ -40,5 +40,5 @@ while(1):
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()
-cv2.destroyAllWindows()
+cv.destroyAllWindows()
 
