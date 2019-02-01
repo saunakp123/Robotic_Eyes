@@ -19,12 +19,15 @@ while(1):
 
     mask = cv.inRange(img_hue, low_range, high_range)
     points = cv.findNonZero(mask)
-    # average these points
-    avg = np.mean(points, axis=0)
-    avg = avg[0]
-    coord = (avg[0]/height, avg[1]/width)
+    if (points is None):
+    	center = ((0, 0))
+    else:	
+	    # average these points
+	    avg = np.mean(points, axis=0)
+	    avg = avg[0]
+	    coord = (avg[0]/height, avg[1]/width)
 
-    center = (int(avg[0]), int(avg[1]))
+	    center = (int(avg[0]), int(avg[1]))
 
     # end = time.time()
     # print(end - start)
