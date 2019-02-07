@@ -6,7 +6,8 @@ text = "Intersection Detected"
 while(1):
 	# get a frame
 	ret, img = cap.read()
-	gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+	img_blur = cv.medianBlur(img,5)
+	gray = cv.cvtColor(img_blur,cv.COLOR_BGR2GRAY)
 	# get the fps of the camera
 	fps = cap.get(5)
 	# opencv index use height*width
@@ -18,7 +19,7 @@ while(1):
 	# start = time.time()
 	# use Hough method to get calibration circles
 	circles1 = cv.HoughCircles(gray,cv.HOUGH_GRADIENT,1,
-	100,param1=100,param2=30,minRadius=10,maxRadius=100)
+	100,param1=100,param2=20,minRadius=3,maxRadius=400)
 	circles = circles1[0,:,:]
 	circles = np.uint16(np.around(circles))
 
@@ -45,12 +46,13 @@ while(1):
 	# draw something if intersection is detected
 	# can be simplified if camera is not moving (calibration points stay the same)
 	for i in circles:
+		cv.circle(img,(i[0],i[1]),20,(0,255,0),3)
 		if (np.linalg.norm(i[0:2] - center) < i[2] ):
 			cv.putText(img, text, (40, 50), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
-		# cv.circle(img,(i[0],i[1]),20,(0,255,0),3)
 
 	# show a frame
 	cv.imshow("capture", img)
+	cv.imshow("blur", img_blur)
 	cv.imshow("mask", mask)
 	# quit if 'q' is pressed
 	if cv.waitKey(1) & 0xFF == ord('q'):
