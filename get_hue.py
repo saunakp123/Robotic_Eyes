@@ -28,6 +28,7 @@ print(end - start)
 cv.circle(img, center, 5, (0,255,0), -1)
 cv.namedWindow('test', cv.WINDOW_NORMAL)
 cv.imshow('test', img)
+# cv.imwrite("test_results/single_dot.jpg", img)
 
 cv.waitKey(0)
 cv.destroyAllWindows()

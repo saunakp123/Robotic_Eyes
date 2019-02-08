@@ -1,9 +1,21 @@
 import numpy as np
 import cv2 as cv
+import datetime
+
+# change this to True if you want to make a video
+SAVE_VIDEO = False
 
 cap = cv.VideoCapture(0)
+# the text to display when intersection is detected
 text = "Intersection Detected"
-while(1):
+save_video = False
+
+# video writer
+if (SAVE_VIDEO):
+	fourcc = cv.VideoWriter_fourcc(*'XVID')
+	out = cv.VideoWriter('test_results/output.avi', fourcc, 20.0, (640,480))
+
+while(cap.isOpened()):
 	# get a frame
 	ret, img = cap.read()
 	img_blur = cv.medianBlur(img,5)
@@ -19,7 +31,7 @@ while(1):
 	# start = time.time()
 	# use Hough method to get calibration circles
 	circles1 = cv.HoughCircles(gray,cv.HOUGH_GRADIENT,1,
-	100,param1=100,param2=20,minRadius=3,maxRadius=400)
+	100,param1=100,param2=10,minRadius=3,maxRadius=30)
 	circles = circles1[0,:,:]
 	circles = np.uint16(np.around(circles))
 
@@ -30,7 +42,7 @@ while(1):
 	points = cv.findNonZero(mask)
 	if (points is None):
 		center = ((0, 0))
-	else:	
+	else:
 		# average these points
 		avg = np.mean(points, axis=0)
 		avg = avg[0]
@@ -52,10 +64,19 @@ while(1):
 
 	# show a frame
 	cv.imshow("capture", img)
-	cv.imshow("blur", img_blur)
 	cv.imshow("mask", mask)
+	if save_video:
+		out.write(img)
+
+	key = cv.waitKey(1) & 0xFF
+	if key == ord('s'):
+		cv.imwrite('test_results/intersection.jpg',img)
 	# quit if 'q' is pressed
-	if cv.waitKey(1) & 0xFF == ord('q'):
+	elif key == ord('q'):
 		break
+	elif key == ord('v') and SAVE_VIDEO:
+		save_video = True
+
 cap.release()
+out.release()
 cv.destroyAllWindows()
