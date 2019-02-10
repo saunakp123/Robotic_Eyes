@@ -5,7 +5,6 @@ import cv2 as cv
 img = cv.imread("test_pictures/1.jpg")
 img_hue = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
-# opencv index use height*width
 height, width, channel = img.shape
 
 low_range = np.array([156, 43, 46])
@@ -15,7 +14,7 @@ start = time.time()
 
 mask = cv.inRange(img_hue, low_range, high_range)
 points = cv.findNonZero(mask)
-# average these points
+# Average these points
 avg = np.mean(points, axis=0)
 avg = avg[0]
 coord = (avg[0]/height, avg[1]/width)
@@ -28,7 +27,6 @@ print(end - start)
 cv.circle(img, center, 5, (0,255,0), -1)
 cv.namedWindow('test', cv.WINDOW_NORMAL)
 cv.imshow('test', img)
-# cv.imwrite("test_results/single_dot.jpg", img)
 
 cv.waitKey(0)
 cv.destroyAllWindows()

@@ -5,10 +5,8 @@ import cv2 as cv
 cap = cv.VideoCapture(0)
 
 while(1):
-    # get a frame
     ret, img = cap.read()
     img_hue = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    # opencv index use height*width
     height, width, channel = img.shape
 
     low_range = np.array([156, 43, 46])
@@ -21,7 +19,7 @@ while(1):
     if (points is None):
     	center = ((0, 0))
     else:	
-	    # average these points
+	    # Average these points
 	    avg = np.mean(points, axis=0)
 	    avg = avg[0]
 	    coord = (avg[0]/height, avg[1]/width)
@@ -33,9 +31,8 @@ while(1):
     # print(count)
     cv.circle(img, center, 5, (0,255,0), -1)
 
-    # show a frame
     cv.imshow("capture", img)
-    # quit if 'q' is pressed
+    # Quit if 'q' is pressed
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()
