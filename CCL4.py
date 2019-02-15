@@ -83,28 +83,3 @@ while(cap.isOpened()):
 cap.release()
 out.release()
 cv.destroyAllWindows()
-# for i in range(0,num_labels):
-	# mask = (labels==i).astype(int)
-	# points = cv.findNonZero(mask)
-	# print(points)
-	# avg = np.mean(points, axis=0)
-	# avg = avg[0]
-	# coord = (avg[0]/height, avg[1]/width)
-	# center[i] = (int(avg[0]), int(avg[1]))
-	# print(center)
-# print(center)
-# for i in labels:
-
-# label_hue = np.uint8(179*labels/np.max(labels))
-# blank_ch = 255*np.ones_like(label_hue)
-# labeled_img = cv.merge([label_hue, blank_ch, blank_ch])
-
-#cvt to BGR for display
-# labeled_img = cv.cvtColor(labeled_img, cv.COLOR_HSV2BGR)
-
-#set bg label to black
-# labeled_img[label_hue==0] = 0
-
-#cv.namedWindow('labeled.png', cv.WINDOW_NORMAL)
-#cv.imshow('labeled.png', labeled_img)
-#cv.imshow('labeledimage.png',labels)
