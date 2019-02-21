@@ -50,7 +50,7 @@ while(cap.isOpened()):
 
 	for i in circles:
 		cv.circle(img,(i[0],i[1]),20,(0,255,0),3)
-
+		
 	cv.imshow("img", img)
 	# cv.imshow("mask", mask)
 	# Video writer
