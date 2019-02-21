@@ -16,7 +16,7 @@ while(cap.isOpened()):
 
 	ret, img = cap.read()
 	# Preprocess the image with a median blur to make it more robust
-	img_blur = cv.medianBlur(img,5)
+	#img_blur = cv.medianBlur(img,5)
 	
 	height, width, channel = img.shape
 
@@ -24,8 +24,9 @@ while(cap.isOpened()):
 	high_range1 = np.array([100, 100, 255])
 
 	# Find the laser dot
-	mask1 = cv.inRange(img_blur, low_range1, high_range1)
-	points = cv.findNonZero(mask1)
+	mask1 = cv.inRange(img, low_range1, high_range1)
+	img_blur1 = cv.medianBlur(mask1,5)
+	points = cv.findNonZero(img_blur1)
 	if (points is None):
 		center = ((0, 0))
 	else:
@@ -38,10 +39,11 @@ while(cap.isOpened()):
 
 	
 	# Blur 
-	low_range2 = np.array([200, 50, 5])
-	high_range2 = np.array([255, 240, 240])
-	mask2 = cv.inRange(img_blur, low_range2, high_range2)
-	output = cv.connectedComponentsWithStats(mask2, 4,cv.CV_32S)
+	low_range2 = np.array([100, 100, 100])
+	high_range2 = np.array([120, 255, 255])
+	mask2 = cv.inRange(img, low_range2, high_range2)
+	img_blur2 = cv.gaussianBlur(mask2,5)
+	output = cv.connectedComponentsWithStats(img_blur2, 8,cv.CV_32S)
 	num_labels = output[0]
 	labels = output[1]
 	stats = output[2]
@@ -50,28 +52,29 @@ while(cap.isOpened()):
 	cal_radius = []
 	
 
-	print(num_labels - 1)
+	print(num_labels)
 
-	for i in range(1, num_labels):
+	for i in range(0,num_labels):
 		cal_center.append([centroid[i][0], centroid[i][1]])
 		cal_radius.append([centroid[i][0] - stats[i][0]])
 	cal_center = np.uint16(np.around(cal_center))
 	cal_radius = np.uint16(np.around(cal_radius))
 	
 
-	for i in range(0, num_labels - 1):
-		cv.circle(img_blur, (cal_center[i][0], cal_center[i][1]), cal_radius[i], (0,255,0), 3)
+	for i in range(1,num_labels):
+		cv.circle(img, (cal_center[i][0], cal_center[i][1]), cal_radius[i], (0,255,0), 3)
 		if (np.linalg.norm(cal_center[0:2] - center) < cal_radius[i] ):
-			cv.putText(img_blur, text, (40, 50), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
+			cv.putText(img, text, (40, 50), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
 	
-	cv.imshow("capture", img_blur)
+	cv.imshow("capture", img)
+	cv.imshow("mask1", mask1)
 	cv.imshow("mask2", mask2)
 	if save_video:
-		out.write(img_blur)
+		out.write(img)
 
 	key = cv.waitKey(1) & 0xFF
 	if key == ord('s'):
-		cv.imwrite('test_results/intersection.jpg',img_blur)
+		cv.imwrite('test_results/intersection.jpg',img)
 	elif key == ord('q'):
 		break
 	elif key == ord('v') and SAVE_VIDEO:
