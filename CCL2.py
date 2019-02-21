@@ -38,7 +38,9 @@ while(cap.isOpened()):
 	
 	# Blur or no blur?
 	gray = cv.cvtColor(img_blur,cv.COLOR_BGR2GRAY)
-	gray = cv.threshold(gray, 20,255, cv.THRESH_BINARY)[1]  # ensure binary
+	mask2 = cv.inRange(gray, 50, 150)
+	cv.imshow('mask2', mask2)
+	gray = cv.threshold(gray, 20,220, cv.THRESH_BINARY)[1]  # ensure binary
 	output = cv.connectedComponentsWithStats(gray, 4,cv.CV_32S)
 	num_labels = output[0]
 	labels = output[1]
@@ -47,9 +49,9 @@ while(cap.isOpened()):
 	cal_center = []
 	cal_radius = []
 
-	print(num_labels)
+	print(num_labels - 1)
 
-	for i in range(0,num_labels):
+	for i in range(1,num_labels):
 		cal_center.append([centroid[i][0], centroid[i][1]])
 		cal_radius.append([centroid[i][0] - stats[i][0]])
 	cal_center = np.uint16(np.around(cal_center))
@@ -57,13 +59,13 @@ while(cap.isOpened()):
 	
 	# circle = concatenate(centrefine,radiusfine)
 	# print(circle)
-	for i in range(0,num_labels):
+	for i in range(0,num_labels - 1):
 		cv.circle(img, (cal_center[i][0], cal_center[i][1]), cal_radius[i], (0,255,0), 3)
 		if (np.linalg.norm(cal_center[0:2] - center) < cal_radius[i] ):
 			cv.putText(img, text, (40, 50), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
 	
 	cv.imshow("capture", img)
-	cv.imshow("mask", mask)
+	# cv.imshow("mask", mask)
 	if save_video:
 		out.write(img)
 

@@ -20,8 +20,22 @@ while(cap.isOpened()):
 	# Preprocess the image with a median blur to make it more robust
 	# img_blur = cv.medianBlur(img,5)
 	gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-	gray = cv.medianBlur(gray, 5)
-	cv.imshow('gray', gray)	
+	mb = cv.medianBlur(gray, 5)
+	gb = cv.GaussianBlur(gray, (5,5), 0)
+	_, th1 = cv.threshold(gray, 127, 255, cv.THRESH_BINARY_INV)
+	th2 = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 2)
+	th3 = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 2)
+	ret3, otsu = cv.threshold(th3, 0, 255, cv.THRESH_BINARY+cv.THRESH_OTSU)
+	_, fine = cv.threshold(gb, ret3+45, 255, cv.THRESH_BINARY_INV)
+
+	cv.imshow('gray', gray)
+	cv.imshow('th1', th1)
+	cv.imshow('th2', th2)
+	cv.imshow('th3', th3)
+	# cv.imshow('gb', gb)
+	cv.imshow('otsu', otsu)
+	# cv.imshow('fine', fine)
+
 	# fps = cap.get(5)
 	height, width, channel = img.shape
 
@@ -30,7 +44,7 @@ while(cap.isOpened()):
 
 	# start = time.time()
 	# Use Hough method to get calibration circles
-	circles1 = cv.HoughCircles(gray,cv.HOUGH_GRADIENT,1,
+	circles1 = cv.HoughCircles(gb,cv.HOUGH_GRADIENT,1,
 	100,param1=100,param2=10,minRadius=3,maxRadius=30)
 	circles = circles1[0,:,:]
 	circles = np.uint16(np.around(circles))

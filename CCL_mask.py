@@ -38,10 +38,10 @@ while(cap.isOpened()):
 
 	
 	# Blur 
-	low_range2 = np.array([220, 10, 10])
-	high_range2 = np.array([255, 100, 100])
+	low_range2 = np.array([200, 50, 5])
+	high_range2 = np.array([255, 240, 240])
 	mask2 = cv.inRange(img_blur, low_range2, high_range2)
-	output = cv.connectedComponentsWithStats(mask2, 8,cv.CV_32S)
+	output = cv.connectedComponentsWithStats(mask2, 4,cv.CV_32S)
 	num_labels = output[0]
 	labels = output[1]
 	stats = output[2]
@@ -50,22 +50,22 @@ while(cap.isOpened()):
 	cal_radius = []
 	
 
-	print(num_labels)
+	print(num_labels - 1)
 
-	for i in range(0,num_labels):
+	for i in range(1, num_labels):
 		cal_center.append([centroid[i][0], centroid[i][1]])
 		cal_radius.append([centroid[i][0] - stats[i][0]])
 	cal_center = np.uint16(np.around(cal_center))
 	cal_radius = np.uint16(np.around(cal_radius))
 	
 
-	for i in range(1,num_labels):
+	for i in range(0, num_labels - 1):
 		cv.circle(img_blur, (cal_center[i][0], cal_center[i][1]), cal_radius[i], (0,255,0), 3)
 		if (np.linalg.norm(cal_center[0:2] - center) < cal_radius[i] ):
 			cv.putText(img_blur, text, (40, 50), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
 	
 	cv.imshow("capture", img_blur)
-	cv.imshow("mask1", mask1)
+	cv.imshow("mask2", mask2)
 	if save_video:
 		out.write(img_blur)
 

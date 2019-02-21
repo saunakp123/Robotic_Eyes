@@ -15,9 +15,10 @@ centroids = output[3]
 
 centroids = np.uint16(np.around(centroids))
 
-for i in range(0, num_labels):
+for i in range(1, num_labels):
 	center = (centroids[i][0], centroids[i][1])
-	cv.circle(img_c, center, 25, (255,0,0), 2)
+	# cv.circle(img_c, center, 25, (255,0,0), 2)
+	cv.putText(img_c, str(i), center, cv.FONT_HERSHEY_PLAIN, 5.0, (0, 0, 255), 2)
 
 cv.namedWindow('test', cv.WINDOW_NORMAL)
 cv.imshow('test',img_c)

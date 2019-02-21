@@ -2,7 +2,7 @@ import time
 import numpy as np
 import cv2 as cv
 
-img = cv.imread("test_pictures/1.jpg")
+img = cv.imread("test_pictures/multidots_white.jpg")
 # OpenCV index use height*width
 sp = img.shape
 
@@ -14,7 +14,7 @@ for y in range(0, sp[0]):
 	for x in range(0, sp[1]):
 		# Color in B G R order
 		color = img[y, x]
-		if color[2] > 254:
+		if color[0] > 220 and color[2] < 220:
 			print(color)
 			# count = count + 1
 			img[y, x] = [0, 0, 0]
