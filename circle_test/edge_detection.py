@@ -5,26 +5,11 @@ import datetime
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 
 IS_FOUND = False
-
-_width  = 600.0
-_height = 420.0
-_margin = 0.0
-
-corners = np.array(
-	[
-		[[  		_margin, _margin 			]],
-		[[ 			_margin, _height + _margin  ]],
-		[[ _width + _margin, _height + _margin  ]],
-		[[ _width + _margin, _margin 			]],
-	]
-)
-
-pts_dst = np.array( corners, np.float32 )
 
 while(cap.isOpened()):
 
@@ -41,33 +26,24 @@ while(cap.isOpened()):
 	contours, h = cv.findContours( closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE )
 
 	for cont in contours:
-		if cv.contourArea( cont ) > 5000 :
-			arc_len = cv.arcLength( cont, True )
-			approx = cv.approxPolyDP( cont, 0.1 * arc_len, True )
+		if cv.contourArea( cont ) < 20000 : continue
 
-			if ( len( approx ) == 4 ):
-				IS_FOUND = True
-				#M = cv.moments( cont )
-				#cX = int(M["m10"] / M["m00"])
-				#cY = int(M["m01"] / M["m00"])
-				#cv.putText(img, "Center", (cX, cY), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 3)
+		print(cv.contourArea( cont ))
+		arc_len = cv.arcLength( cont, True )
+		approx = cv.approxPolyDP( cont, 0.1 * arc_len, True )
 
-				pts_src = np.array( approx, np.float32 )
+		if ( len( approx ) != 4 ): continue
 
-				h, status = cv.findHomography( pts_src, pts_dst )
-				out = cv.warpPerspective( img, h, ( int( _width + _margin * 2 ), int( _height + _margin * 2 ) ) )
+		IS_FOUND = True
+		cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
+		(x, y, w, h) = cv.boundingRect(cont)
+		roi = img[y:y+h, x:x+w]
 
-				cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
 
-			else : pass
-
-	#cv.imshow( 'closed', closed )
-	#cv.imshow( 'gray', gray )
-	cv.imshow( 'edges', edges )
-	cv.imshow( 'img', img )
-
-	if IS_FOUND :
-		cv.imshow( 'out', out )
+	cv.imshow('edges', edges)
+	cv.imshow('img', img)
+	if (IS_FOUND):
+		cv.imshow('roi', roi)
 
 	if (not flag and SAVE_VIDEO):
 		flag = True
@@ -91,6 +67,7 @@ while(cap.isOpened()):
 		SAVE_VIDEO = True
 
 cap.release()
-out_img.release()
-out_mask.release()
+if (SAVE_VIDEO):
+	out_img.release()
+	out_mask.release()
 cv.destroyAllWindows()
