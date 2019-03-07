@@ -5,7 +5,7 @@ import datetime
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(2)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 
@@ -14,6 +14,7 @@ IS_FOUND = False
 while(cap.isOpened()):
 
 	ret, img = cap.read()
+	col, row = img.shape[:2]
 	# Preprocess the image with a median blur to make it more robust
 	# img_blur = cv.medianBlur(img,5)
 	gray = cv.cvtColor( img, cv.COLOR_BGR2GRAY )
@@ -28,21 +29,44 @@ while(cap.isOpened()):
 	for cont in contours:
 		if cv.contourArea( cont ) < 20000 : continue
 
-		print(cv.contourArea( cont ))
+		# print(cv.contourArea( cont ))
 		arc_len = cv.arcLength( cont, True )
 		approx = cv.approxPolyDP( cont, 0.1 * arc_len, True )
 
 		if ( len( approx ) != 4 ): continue
 
-		IS_FOUND = True
+		rect = cv.minAreaRect(cont)
+		(x, y), (width, height), angle = rect
+		# print(int(x), int(y), int(width), int(height))
+
+		if (width < height):
+			temp = width
+			width = height
+			height = temp
+			angle = angle + 90
+
+		ymin = int(y - height/2)
+		xmin = int(x - width/2)
+		ymax = int(y + height/2)
+		xmax = int(x + width/2)
+		ratio = width/height
+		print(ratio)
+
+		center = (int(x), int(y))
+		M = cv.getRotationMatrix2D(center, angle, 1)
+		rot_img = cv.warpAffine(img, M, (row, col))
+
 		cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
-		(x, y, w, h) = cv.boundingRect(cont)
-		roi = img[y:y+h, x:x+w]
+		# print(ymin, ymax, xmin, xmax)
+		roi = rot_img[ymin:ymax, xmin:xmax]
+		roi = cv.resize(roi, (int(ratio*col), col), interpolation = cv.INTER_CUBIC)
+		IS_FOUND = True
 
 
-	cv.imshow('edges', edges)
+	# cv.imshow('edges', edges)
 	cv.imshow('img', img)
 	if (IS_FOUND):
+		# cv.imshow('rot', rot_img)
 		cv.imshow('roi', roi)
 
 	if (not flag and SAVE_VIDEO):
