@@ -5,11 +5,14 @@ import datetime
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 
+RATIO = 1.8
+
 IS_FOUND = False
+
 
 while(cap.isOpened()):
 
@@ -34,23 +37,40 @@ while(cap.isOpened()):
 		approx = cv.approxPolyDP( cont, 0.1 * arc_len, True )
 
 		if ( len( approx ) != 4 ): continue
+		IS_FOUND = True
 
 		rect = cv.minAreaRect(cont)
 		(x, y), (width, height), angle = rect
-		# print(int(x), int(y), int(width), int(height))
+		box = cv.boxPoints(rect)
+		box = np.int0(box)
 
 		if (width < height):
+			swap = np.zeros((4, 2), dtype = int)
+			for i in range(0, 4):
+				swap[i] = box[(i+1)%4]
+			box = swap
 			temp = width
 			width = height
 			height = temp
 			angle = angle + 90
+
+		pts1 = np.float32(box)
+		col2 = col
+		row2 = col*RATIO
+		# pts2 = np.float32([[0,col2],[0,0],[row2,0],[row2,row2]])
+		pts2 = np.float32([[0,300],[0,0],[300,0],[300,300]])
+		M = cv.getPerspectiveTransform(pts1,pts2)
+
+		# dst = cv.warpPerspective(img,M,(int(row2),col2))
+		dst = cv.warpPerspective(img,M,(300,300))
+
 
 		ymin = int(y - height/2)
 		xmin = int(x - width/2)
 		ymax = int(y + height/2)
 		xmax = int(x + width/2)
 		ratio = width/height
-		print(ratio)
+		# print(ratio)
 
 		center = (int(x), int(y))
 		M = cv.getRotationMatrix2D(center, angle, 1)
@@ -59,15 +79,15 @@ while(cap.isOpened()):
 		cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
 		# print(ymin, ymax, xmin, xmax)
 		roi = rot_img[ymin:ymax, xmin:xmax]
+		print(roi.size)
 		roi = cv.resize(roi, (int(ratio*col), col), interpolation = cv.INTER_CUBIC)
-		IS_FOUND = True
-
 
 	# cv.imshow('edges', edges)
 	cv.imshow('img', img)
 	if (IS_FOUND):
 		# cv.imshow('rot', rot_img)
 		cv.imshow('roi', roi)
+		cv.imshow('dst', dst)
 
 	if (not flag and SAVE_VIDEO):
 		flag = True
