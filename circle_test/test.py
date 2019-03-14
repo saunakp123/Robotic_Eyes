@@ -20,6 +20,9 @@ while(cap.isOpened()):
 
 	ret, img = cap.read()
 	col, row = img.shape[:2]
+	col2 = col
+	row2 = int(col*RATIO)
+	dst = img
 	# Preprocess the image with a median blur to make it more robust
 	# img_blur = cv.medianBlur(img,5)
 	gray = cv.cvtColor( img, cv.COLOR_BGR2GRAY )
@@ -49,9 +52,6 @@ while(cap.isOpened()):
 
 		box = order_points(box)
 
-		col2 = col
-		row2 = col*RATIO
-
 		des = np.float32([[0,0],[row2,0],[row2,col2],[0,col2]])
 
 		M = cv.getPerspectiveTransform(box, des)
@@ -59,12 +59,35 @@ while(cap.isOpened()):
 		dst = cv.warpPerspective(img,M,(int(row2),col2))
 
 		# cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
-		for i in range(4):
-			# cv.circle(img, (box[i][0], box[i][1]), 3, (0,255,0), 3)
-			cv.putText(img, str(i), (box[i][0], box[i][1]), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
-		# print(ymin, ymax, xmin, xmax)
+		# for i in range(4):
+		# 	cv.putText(img, str(i), (box[i][0], box[i][1]), cv.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255), 2)
 
-	# cv.imshow('edges', edges)
+	# if (IS_FOUND == False): continue
+	dst_hue = cv.cvtColor(dst, cv.COLOR_BGR2HSV)
+	low_range2 = np.array([100, 100, 100])
+	high_range2 = np.array([120, 255, 255])
+	mask = cv.inRange(dst_hue, low_range2, high_range2)
+	output = cv.connectedComponentsWithStats(mask, 8,cv.CV_32S)
+	num_labels = output[0]
+	labels = output[1]
+	stats = output[2]
+	centroid = output[3]
+	cal_center = []
+	cal_radius = []
+	
+	# print(num_labels)
+	for i in range(0,num_labels):
+		radius = centroid[i][0] - stats[i][0]
+		if radius > 8 or radius < 3: continue
+		cal_center.append([centroid[i][0], centroid[i][1]])
+		cal_radius.append([radius])
+	cal_center = np.uint16(np.around(cal_center))
+	cal_radius = np.uint16(np.around(cal_radius))
+	
+	num = cal_radius.size
+	for i in range(0,num):
+		cv.circle(dst, (cal_center[i][0], cal_center[i][1]), cal_radius[i], (0,255,0), 3)
+
 	cv.imshow('img', img)
 	if (IS_FOUND):
 		cv.imshow('dst', dst)
@@ -75,12 +98,12 @@ while(cap.isOpened()):
 		fourcc_mask = cv.VideoWriter_fourcc(*'XVID')
 		path_img = '../test_results/'+current+'_img.avi'
 		path_mask = '../test_results/'+current+'_mask.avi'
-		out_img = cv.VideoWriter(path_img, fourcc_img, 20.0, (640,480))
-		out_mask = cv.VideoWriter(path_mask, fourcc_mask, 20.0, (640,480), 0)
+		out_img = cv.VideoWriter(path_img, fourcc_img, 20.0, (row,col))
+		out_mask = cv.VideoWriter(path_mask, fourcc_mask, 20.0, (row2,col2))
 
 	if flag:
 		out_img.write(img)
-		out_mask.write(edges)
+		out_mask.write(dst)
 
 	key = cv.waitKey(1) & 0xFF
 	if key == ord('s'):
