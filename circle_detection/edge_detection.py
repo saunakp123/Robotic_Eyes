@@ -5,7 +5,7 @@ import datetime
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(2)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 
@@ -18,6 +18,7 @@ while(cap.isOpened()):
 
 	ret, img = cap.read()
 	col, row = img.shape[:2]
+	roi = img
 	# Preprocess the image with a median blur to make it more robust
 	# img_blur = cv.medianBlur(img,5)
 	gray = cv.cvtColor( img, cv.COLOR_BGR2GRAY )
@@ -79,12 +80,12 @@ while(cap.isOpened()):
 		cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
 		# print(ymin, ymax, xmin, xmax)
 		roi = rot_img[ymin:ymax, xmin:xmax]
-		print(roi.size)
-		roi = cv.resize(roi, (int(ratio*col), col), interpolation = cv.INTER_CUBIC)
+		# print(roi.size)
+		# roi = cv.resize(roi, (int(ratio*col), col), interpolation = cv.INTER_CUBIC)
 
 	# cv.imshow('edges', edges)
 	cv.imshow('img', img)
-	if (IS_FOUND):
+	if IS_FOUND:
 		# cv.imshow('rot', rot_img)
 		cv.imshow('roi', roi)
 		cv.imshow('dst', dst)
@@ -96,15 +97,15 @@ while(cap.isOpened()):
 		path_img = '../test_results/'+current+'_img.avi'
 		path_mask = '../test_results/'+current+'_mask.avi'
 		out_img = cv.VideoWriter(path_img, fourcc_img, 20.0, (640,480))
-		out_mask = cv.VideoWriter(path_mask, fourcc_mask, 20.0, (640,480), 0)
+		out_mask = cv.VideoWriter(path_mask, fourcc_mask, 20.0, (640,480))
 
 	if flag:
 		out_img.write(img)
-		out_mask.write(edges)
+		out_mask.write(roi)
 
 	key = cv.waitKey(1) & 0xFF
 	if key == ord('s'):
-		cv.imwrite('test_results/intersection.jpg',img)
+		cv.imwrite('../test_results/img.jpg',img)
 	elif key == ord('q'):
 		break
 	elif key == ord('v'):
