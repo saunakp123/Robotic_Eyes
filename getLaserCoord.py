@@ -11,7 +11,7 @@ def getLaserCoord(img):
 	points = cv.findNonZero(mask)
 
 	if (points is None):
-		center = (0, 0)
+		return 0
 	else:
 		# Average these points
 		avg = np.mean(points, axis=0)
