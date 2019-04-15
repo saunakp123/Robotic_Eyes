@@ -17,7 +17,7 @@ RATIO = 1.73
 COL = 480
 ROW = COL*RATIO
 ret, img = cap.read()
-M = getWarp(img)
+M = getWarp(img, RATIO)
 
 input("press any key to continue: ")
 
@@ -26,6 +26,13 @@ while(cap.isOpened()):
 	ret, img = cap.read()
 	dst = cv.warpPerspective(img,M,(int(ROW),COL))
 	center = getLaserCoord(dst)
+	# center = getLaserCoord(img)
+	print(center)
+
+	cv.imshow('img', img)
+	cv.imshow('dst', dst)
+	if cv.waitKey(1) & 0xFF == ord('q'):
+	    break
 
 cap.release()
 cv.destroyAllWindows()
