@@ -7,7 +7,7 @@ from transform import four_point_transform
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(1)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 

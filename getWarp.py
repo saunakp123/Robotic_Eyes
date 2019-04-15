@@ -1,9 +1,34 @@
 import cv2 as cv
 import numpy as np
 
+def order_points(pts):
+	# initialzie a list of coordinates that will be ordered
+	# such that the first entry in the list is the top-left,
+	# the second entry is the top-right, the third is the
+	# bottom-right, and the fourth is the bottom-left
+	rect = np.zeros((4, 2), dtype = "float32")
+
+	# the top-left point will have the smallest sum, whereas
+	# the bottom-right point will have the largest sum
+	s = pts.sum(axis = 1)
+	rect[0] = pts[np.argmin(s)]
+	rect[2] = pts[np.argmax(s)]
+
+	# now, compute the difference between the points, the
+	# top-right point will have the smallest difference,
+	# whereas the bottom-left will have the largest difference
+	diff = np.diff(pts, axis = 1)
+	rect[1] = pts[np.argmin(diff)]
+	rect[3] = pts[np.argmax(diff)]
+
+	# return the ordered coordinates
+	return rect
+
 def getWarp(img):
 	IS_FOUND = False
 	col, row = img.shape[:2]
+	# Preprocess the image with a median blur to make it more robust
+	# img_blur = cv.medianBlur(img,5)
 	gray = cv.cvtColor( img, cv.COLOR_BGR2GRAY )
 	gray = cv.bilateralFilter( gray, 1, 10, 120 )
 
@@ -23,32 +48,26 @@ def getWarp(img):
 		if ( len( approx ) != 4 ): continue
 		IS_FOUND = True
 
-		rect = cv.minAreaRect(cont)
-		(x, y), (width, height), angle = rect
-		box = cv.boxPoints(rect)
+		box = np.array([
+			approx[0][0],
+			approx[1][0],
+			approx[2][0],
+			approx[3][0]], dtype = "float32")
 
-		if (width < height):
-			swap = np.zeros((4, 2))
-			for i in range(0, 4):
-				swap[i] = box[(i+1)%4]
-			box = swap
+		box = order_points(box)
 
 		col2 = col
 		row2 = col*RATIO
 
-		pts1 = np.float32(box)
-		pts2 = np.float32([[0,col2],[0,0],[row2,0],[row2,row2]])
-		# print(pts1)
-		# pts2 = np.float32([[0,300],[0,0],[300,0],[300,300]])
-		M = cv.getPerspectiveTransform(pts1,pts2)
+		des = np.float32([[0,0],[row2,0],[row2,col2],[0,col2]])
+		
+		M = cv.getPerspectiveTransform(box, des)
 
-		dst = cv.warpPerspective(img,M,(int(row2),col2))
-		# dst = cv.warpPerspective(img,M,(300,300))
+		# dst = cv.warpPerspective(img,M,(int(row2),col2))
 
-		cv.drawContours( img, [approx], -1, ( 255, 0, 0 ), 2 )
 
 	if (IS_FOUND):
-		return dst
+		return M
 	else:
 		print("screen not found")
-		return img
+		return 0
