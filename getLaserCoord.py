@@ -8,7 +8,7 @@ def getLaserCoord(img):
 	high_range = np.array([250, 200, 255])
 
 	mask = cv.inRange(img, low_range, high_range)
-	cv.imshow('mask', mask)
+	# cv.imshow('mask', mask)
 	points = cv.findNonZero(mask)
 
 	if (points is None):
@@ -21,7 +21,7 @@ def getLaserCoord(img):
 
 		center = (int(avg[0]), int(avg[1]))
 
-	# cv.circle(img, center, 5, (0,255,0), -1)
+	cv.circle(img, center, 5, (0,255,0), -1)
 
 	return center
 

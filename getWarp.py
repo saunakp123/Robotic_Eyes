@@ -24,7 +24,7 @@ def order_points(pts):
 	# return the ordered coordinates
 	return rect
 
-def getWarp(img):
+def getWarp(img, ratio):
 	IS_FOUND = False
 	col, row = img.shape[:2]
 	# Preprocess the image with a median blur to make it more robust
@@ -57,7 +57,7 @@ def getWarp(img):
 		box = order_points(box)
 
 		col2 = col
-		row2 = col*RATIO
+		row2 = col*ratio
 
 		des = np.float32([[0,0],[row2,0],[row2,col2],[0,col2]])
 		
