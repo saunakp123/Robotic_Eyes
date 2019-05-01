@@ -2,7 +2,7 @@ import time
 import numpy as np
 import cv2 as cv
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 
 while(1):
     ret, img = cap.read()

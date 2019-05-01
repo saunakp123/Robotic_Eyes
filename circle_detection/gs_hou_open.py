@@ -5,7 +5,7 @@ import datetime
 SAVE_VIDEO = False
 flag = False
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 current = datetime.datetime.now()
 current = current.strftime("%H-%M-%S")
 
