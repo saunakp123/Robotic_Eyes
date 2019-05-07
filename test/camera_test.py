@@ -2,8 +2,9 @@ import numpy as np
 import cv2 as cv
 
 # The index is for different cameras
-cap = cv.VideoCapture(1)
-while(1):
+cap = cv.VideoCapture(0)
+
+while(cap.isOpened()):
     # Get a frame
     ret, frame = cap.read()
     # Show a frame

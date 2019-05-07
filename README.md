@@ -1,8 +1,20 @@
 # Robotic_Eyes
 
-1. `test_camera.py` : for testing the camera
-2. `get_color.py`, `get_gray.py`, `get_hue.py` : for statically analyzing the image with color, grayscale and hue
-3. `dot_detection.py` : get frame from the camera, find the pixels in certain HSV range and take their mean to get the laser dot position
-4. `dot_detection2.py` : same as before but use RGB value to make it easier to test.
-5. `multidots_detection.py` : use HoughCircles function in OpenCV to detect calibration circles in the image
-6. `dot_intersection.py` : detect the intersection of laser dot with calibration circles and a way to save video.
+1. `test/`: Initial test.
+   1. `camera_test.py`
+   2. `mestro_test.py`
+2. `dot_detection/`
+   1. `dot_detection_HSV.py`: Use HSV to filter the red laser dot, result is worse than using RGB.
+   2. `dot_detection_RGB.py`: Better to detect laser dot.
+   3. `get_hue.py`: Transfer colors to HSV value in a picture.
+3. `circle_detection/`
+   1. `circle.py`: Use `HoughCircles` to detect circles. The result is good enough.
+   2. `cc.py`: Use `connectedComponentsWithStats`. Result is noisy.
+   3. `diff.py`: Use the difference between the background image and the circle image to find circles. It is highly sensitive to the movement since a slight change will cause the moire pattern to be totally different. 
+   4. `gs_hou.py`: Use `morphologyEx` to improve the result. Haven't implemented yet, could be helpful.
+   5. `hsv_cc.py`: First filter the image with HSV, then use `connectedComponentsWithStats`.
+   6. `hsv_hou_cc.py`: Filter the image with HSV, then `connectedComponentsWithStats`, and pass this to `HoughCircles`.
+   7. `threshold.py`: The best method right now. Pipeline: `img -> gray -> median blur -> HoughCircles`. <mark>Possible improvement: gs_hou.</mark>
+4. `warp/`
+   1. `transform.py`: To order the four points in a rectangle.
+   2. `warp.py`: Use edge detection to extract the screen.

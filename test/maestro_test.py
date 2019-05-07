@@ -1,5 +1,6 @@
 import maestro
 
+# Find the right COM
 m = maestro.Controller('COM3')
 
 chan = 4
@@ -8,7 +9,7 @@ chan = 4
 
 xmin = m.getMin(chan)
 xmax = m.getMax(chan)
-for chan in range(0,24):
+for chan in range(0, 24):
 	pos = m.getPosition(chan)
 	print(pos)
 
