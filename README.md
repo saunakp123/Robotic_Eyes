@@ -14,7 +14,7 @@
    4. `gs_hou.py`: Use `morphologyEx` to improve the result. Haven't implemented yet, could be helpful.
    5. `hsv_cc.py`: First filter the image with HSV, then use `connectedComponentsWithStats`.
    6. `hsv_hou_cc.py`: Filter the image with HSV, then `connectedComponentsWithStats`, and pass this to `HoughCircles`.
-   7. `threshold.py`: The best method right now. Pipeline: `img -> gray -> median blur -> HoughCircles`. <mark>Possible improvement: gs_hou.</mark>
+   7. `threshold.py`: The best method right now. Pipeline: `img -> gray -> median blur -> HoughCircles`. **Possible improvement: gs_hou.**
 4. `warp/`
    1. `transform.py`: To order the four points in a rectangle.
    2. `warp.py`: Use edge detection to extract the screen.
