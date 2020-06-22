@@ -5,11 +5,6 @@ The setup consisted of- A Screen, The eye tracker (paired to the screen), a Came
 
 By pointing the laser on the screen at regular intervals, pixel co-ordinates and its corresponding servo command angles were recorded and stored as a grid. Image processing algorithms were used to detect laser position on the screen. Once a map/grid was formed, regression methods were used to interpolate between the grid points and generate servo commands to point the laser at the desired point on the screen. The Camera was used for visual feedback of the laser position. Once calibrated, the laser was replaced by artificial robotic eyes to fool the eye tracker.
 
-main.py contains the main calibration routine
-control.py contains functions which mainly interface with the servo
-mapping.py contains functions which are related to generating pixel-servo map
-perception.py contains function used by the camera to detect laser, calibration points, screen warping, etc
-
 1. `test/`: Initial test.
    1. `camera_test.py`
    2. `mestro_test.py`
@@ -28,3 +23,9 @@ perception.py contains function used by the camera to detect laser, calibration 
 4. `warp/`
    1. `transform.py`: To order the four points in a rectangle.
    2. `warp.py`: Use edge detection to extract the screen.
+5. `calibration/'
+   1. `main.py`: contains the main calibration routine
+   2. `control.py`: contains functions which mainly interface with the servo
+   3. `mapping.py`: contains functions which are related to generating pixel-servo map
+   4. `perception.py`: contains function used by the camera to detect laser, calibration points, screen warping, etc
+
