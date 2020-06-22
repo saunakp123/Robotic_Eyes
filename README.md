@@ -23,7 +23,7 @@ By pointing the laser on the screen at regular intervals, pixel co-ordinates and
 4. `warp/`
    1. `transform.py`: To order the four points in a rectangle.
    2. `warp.py`: Use edge detection to extract the screen.
-5. `calibration/'
+5. `calibration/`
    1. `main.py`: contains the main calibration routine
    2. `control.py`: contains functions which mainly interface with the servo
    3. `mapping.py`: contains functions which are related to generating pixel-servo map
